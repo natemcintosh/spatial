@@ -17,14 +17,11 @@ type Point2d struct {
 func Compare(p, q Point2d) int {
 	if p.X < q.X {
 		return -1
-	}
-	if p.X > q.X {
+	} else if p.X > q.X {
 		return 1
-	}
-	if p.Y < q.Y {
+	} else if p.Y < q.Y {
 		return -1
-	}
-	if p.Y > q.Y {
+	} else if p.Y > q.Y {
 		return 1
 	}
 	return 0
