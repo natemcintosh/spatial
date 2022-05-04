@@ -15,7 +15,7 @@ func TestInsert(t *testing.T) {
 		{4, 4},
 		{5, 5},
 		{6, 6},
-	})
+	}, Distance)
 	p := Point2d{2, 3}
 	want := NewLinearSlice([]Point2d{
 		{0, 0},
@@ -26,7 +26,7 @@ func TestInsert(t *testing.T) {
 		{5, 5},
 		{6, 6},
 		{2, 3},
-	})
+	}, Distance)
 	s.Insert(p)
 	if s.s[len(s.s)-1] != p {
 		t.Errorf("got %v; want %v", s.s, want)
@@ -42,7 +42,7 @@ func TestNearest(t *testing.T) {
 		{4, 4},
 		{5, 5},
 		{6, 6},
-	})
+	}, Distance)
 	testCases := []struct {
 		desc string
 		p    Point2d
@@ -94,7 +94,7 @@ func TestNearestN(t *testing.T) {
 		{2, 2},
 		{3, 3},
 		{4, 4},
-	})
+	}, Distance)
 	testCases := []struct {
 		desc string
 		p    Point2d
@@ -145,7 +145,7 @@ func TestInRange(t *testing.T) {
 		{2, 2},
 		{3, 3},
 		{4, 4},
-	})
+	}, Distance)
 	testCases := []struct {
 		desc string
 		p    Point2d

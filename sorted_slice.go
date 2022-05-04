@@ -5,21 +5,22 @@ import (
 )
 
 // LinearSlice is meant for testing the other types. It is optimized for testing ease
-type LinearSlice struct {
-	s []Point2d
+type LinearSlice[T comparable] struct {
+	s   []T
+	dst func(T, T) float64
 }
 
-func NewLinearSlice(points []Point2d) LinearSlice {
-	return LinearSlice{points}
+func NewLinearSlice[T comparable](points []T, distance_func func(T, T) float64) LinearSlice[T] {
+	return LinearSlice[T]{points, distance_func}
 }
 
 // Insert inserts p into s.
-func (s *LinearSlice) Insert(p Point2d) {
+func (s *LinearSlice[T]) Insert(p T) {
 	s.s = append(s.s, p)
 }
 
 // Remove removes the first instance of p from s. If it is not found, nothing happens
-func (s *LinearSlice) Remove(p Point2d) {
+func (s *LinearSlice[T]) Remove(p T) {
 	idx := slices.Index(s.s, p)
 	if idx >= 0 {
 		s.s = slices.Delete(s.s, idx, idx)
@@ -27,7 +28,7 @@ func (s *LinearSlice) Remove(p Point2d) {
 }
 
 // Contains returns true if p is in s.
-func (s LinearSlice) Contains(p Point2d) bool {
+func (s LinearSlice[T]) Contains(p T) bool {
 	idx := slices.Index(s.s, p)
 	if idx >= 0 {
 		return true
@@ -36,13 +37,13 @@ func (s LinearSlice) Contains(p Point2d) bool {
 }
 
 // Nearest returns the nearest point in s to p.
-func (s LinearSlice) Nearest(p Point2d) Point2d {
+func (s LinearSlice[T]) Nearest(p T) T {
 	// Just search over all the points
 	smallest_item := s.s[0]
-	smallest_dist := Distance(s.s[0], p)
+	smallest_dist := s.dst(s.s[0], p)
 	for _, v := range s.s {
-		if Distance(v, p) < smallest_dist {
-			smallest_dist = Distance(v, p)
+		if s.dst(v, p) < smallest_dist {
+			smallest_dist = s.dst(v, p)
 			smallest_item = v
 		}
 	}
@@ -51,18 +52,18 @@ func (s LinearSlice) Nearest(p Point2d) Point2d {
 }
 
 // NearestN returns the nearest n points in s to p. If `n > len(s)`, returns an error
-func (s LinearSlice) NearestN(p Point2d, n int) ([]Point2d, error) {
+func (s LinearSlice[T]) NearestN(p T, n int) ([]T, error) {
 	if n > len(s.s) || n < 0 {
 		return nil, ErrBadNumberOfPoints
 	}
 
 	// Make a copy
-	result := make([]Point2d, len(s.s))
+	result := make([]T, len(s.s))
 	copy(result, s.s)
 
 	// Sort it
-	slices.SortFunc(result, func(a, b Point2d) bool {
-		return Distance(a, p) < Distance(b, p)
+	slices.SortFunc(result, func(a, b T) bool {
+		return s.dst(a, p) < s.dst(b, p)
 	})
 
 	// Return only the first `n` items
@@ -71,11 +72,11 @@ func (s LinearSlice) NearestN(p Point2d, n int) ([]Point2d, error) {
 }
 
 // InRange returns all points in s within range of p.
-func (s LinearSlice) InRange(p Point2d, r float64) []Point2d {
-	result := make([]Point2d, 0)
+func (s LinearSlice[T]) InRange(p T, r float64) []T {
+	result := make([]T, 0)
 
 	for _, v := range s.s {
-		if Distance(v, p) <= r {
+		if s.dst(v, p) <= r {
 			result = append(result, v)
 		}
 	}
