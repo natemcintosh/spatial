@@ -1,5 +1,10 @@
 package spatial
 
+import (
+	"errors"
+	"math"
+)
+
 type Spatial interface {
 	Insert(p Point2d)
 	Remove(p Point2d)
@@ -9,8 +14,16 @@ type Spatial interface {
 	InRange(p Point2d, r float64) []Point2d
 }
 
+var (
+	ErrBadNumberOfPoints = errors.New("asked for too many points or < 0")
+)
+
 type Point2d struct {
 	X, Y float64
+}
+
+func Distance(p, q Point2d) float64 {
+	return math.Sqrt((p.X-q.X)*(p.X-q.X) + (p.Y-q.Y)*(p.Y-q.Y))
 }
 
 // Compare sorts by X, then Y. -1 if p < q, 0 if equal, and +1 if p > q
