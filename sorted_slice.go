@@ -83,3 +83,15 @@ func (s LinearSlice[T]) InRange(p T, r float64) []T {
 
 	return result
 }
+
+// InRangeCount counts all the points in `s` that are closer to `p` than `r`
+func (s LinearSlice[T]) InRangeCount(p T, r float64) int {
+	count := 0
+	for _, v := range s.s {
+		if s.dst(v, p) <= r {
+			count += 1
+		}
+	}
+
+	return count
+}

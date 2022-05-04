@@ -7,15 +7,18 @@ import (
 )
 
 func TestInsert(t *testing.T) {
-	s := NewLinearSlice([]Point2d{
-		{0, 0},
-		{1, 1},
-		{2, 2},
-		{3, 3},
-		{4, 4},
-		{5, 5},
-		{6, 6},
-	}, Distance)
+	s := NewLinearSlice(
+		[]Point2d{
+			{0, 0},
+			{1, 1},
+			{2, 2},
+			{3, 3},
+			{4, 4},
+			{5, 5},
+			{6, 6},
+		},
+		Point2dDistance,
+	)
 	p := Point2d{2, 3}
 	want := NewLinearSlice([]Point2d{
 		{0, 0},
@@ -26,7 +29,7 @@ func TestInsert(t *testing.T) {
 		{5, 5},
 		{6, 6},
 		{2, 3},
-	}, Distance)
+	}, Point2dDistance)
 	s.Insert(p)
 	if s.s[len(s.s)-1] != p {
 		t.Errorf("got %v; want %v", s.s, want)
@@ -34,15 +37,18 @@ func TestInsert(t *testing.T) {
 }
 
 func TestNearest(t *testing.T) {
-	s := NewLinearSlice([]Point2d{
-		{0, 0},
-		{1, 1},
-		{2, 2},
-		{3, 3},
-		{4, 4},
-		{5, 5},
-		{6, 6},
-	}, Distance)
+	s := NewLinearSlice(
+		[]Point2d{
+			{0, 0},
+			{1, 1},
+			{2, 2},
+			{3, 3},
+			{4, 4},
+			{5, 5},
+			{6, 6},
+		},
+		Point2dDistance,
+	)
 	testCases := []struct {
 		desc string
 		p    Point2d
@@ -85,16 +91,19 @@ func TestNearest(t *testing.T) {
 }
 
 func TestNearestN(t *testing.T) {
-	s := NewLinearSlice([]Point2d{
-		{-12.3, -12.3},
-		{-0.99, -0.99},
-		{-0.25, -0.25},
-		{0.25, 0.25},
-		{1., 1},
-		{2, 2},
-		{3, 3},
-		{4, 4},
-	}, Distance)
+	s := NewLinearSlice(
+		[]Point2d{
+			{-12.3, -12.3},
+			{-0.99, -0.99},
+			{-0.25, -0.25},
+			{0.25, 0.25},
+			{1., 1},
+			{2, 2},
+			{3, 3},
+			{4, 4},
+		},
+		Point2dDistance,
+	)
 	testCases := []struct {
 		desc string
 		p    Point2d
@@ -136,16 +145,19 @@ func TestNearestN(t *testing.T) {
 }
 
 func TestInRange(t *testing.T) {
-	s := NewLinearSlice([]Point2d{
-		{-12.3, -12.3},
-		{-0.99, -0.99},
-		{-0.25, -0.25},
-		{0.25, 0.25},
-		{1, 1},
-		{2, 2},
-		{3, 3},
-		{4, 4},
-	}, Distance)
+	s := NewLinearSlice(
+		[]Point2d{
+			{-12.3, -12.3},
+			{-0.99, -0.99},
+			{-0.25, -0.25},
+			{0.25, 0.25},
+			{1, 1},
+			{2, 2},
+			{3, 3},
+			{4, 4},
+		},
+		Point2dDistance,
+	)
 	testCases := []struct {
 		desc string
 		p    Point2d
