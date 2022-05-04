@@ -4,6 +4,7 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+// LinearSlice is meant for testing the other types. It is optimized for testing ease
 type LinearSlice struct {
 	s []Point2d
 }
@@ -71,23 +72,13 @@ func (s LinearSlice) NearestN(p Point2d, n int) ([]Point2d, error) {
 
 // InRange returns all points in s within range of p.
 func (s LinearSlice) InRange(p Point2d, r float64) []Point2d {
-	idx, _ := slices.BinarySearchFunc(s.s, p, Compare)
-	if idx < 0 {
-		idx = -idx - 1
-	}
-	if idx >= len(s.s) {
-		idx = len(s.s) - 1
-	}
-	var i, j int
-	for i = idx; i >= 0; i-- {
-		if Less(s.s[i], p) {
-			break
+	result := make([]Point2d, 0)
+
+	for _, v := range s.s {
+		if Distance(v, p) <= r {
+			result = append(result, v)
 		}
 	}
-	for j = idx + 1; j < len(s.s); j++ {
-		if Less(p, s.s[j]) {
-			break
-		}
-	}
-	return s.s[i+1 : j]
+
+	return result
 }

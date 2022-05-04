@@ -1,6 +1,10 @@
 package spatial
 
-import "testing"
+import (
+	"testing"
+
+	"golang.org/x/exp/slices"
+)
 
 func TestInsert(t *testing.T) {
 	s := NewLinearSlice([]Point2d{
@@ -126,6 +130,62 @@ func TestNearestN(t *testing.T) {
 				if w != got[i] {
 					t.Errorf("got %v, want %v", got, tC.want)
 				}
+			}
+		})
+	}
+}
+
+func TestInRange(t *testing.T) {
+	s := NewLinearSlice([]Point2d{
+		{-12.3, -12.3},
+		{-0.99, -0.99},
+		{-0.25, -0.25},
+		{0.25, 0.25},
+		{1, 1},
+		{2, 2},
+		{3, 3},
+		{4, 4},
+	})
+	testCases := []struct {
+		desc string
+		p    Point2d
+		r    float64
+		want []Point2d
+	}{
+		{
+			desc: "none",
+			p:    Point2d{0, 0},
+			r:    0.001,
+			want: []Point2d{},
+		},
+		{
+			desc: "one",
+			p:    Point2d{1.1, 1.1},
+			r:    0.25,
+			want: []Point2d{{1, 1}},
+		},
+		{
+			desc: "all",
+			p:    Point2d{1.1, 1.1},
+			r:    1000,
+			want: []Point2d{
+				{-12.3, -12.3},
+				{-0.99, -0.99},
+				{-0.25, -0.25},
+				{0.25, 0.25},
+				{1, 1},
+				{2, 2},
+				{3, 3},
+				{4, 4},
+			},
+		},
+	}
+	for _, tC := range testCases {
+		t.Run(tC.desc, func(t *testing.T) {
+			got := s.InRange(tC.p, tC.r)
+
+			if !slices.Equal(got, tC.want) {
+				t.Errorf("got %v, want %v", got, tC.want)
 			}
 		})
 	}
