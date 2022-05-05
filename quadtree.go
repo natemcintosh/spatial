@@ -32,8 +32,8 @@ func NewQuadtree[T any](
 	return &Quadtree[T]{root_node, bounds, get_point, calc_distance}
 }
 
-// Add a point to the Quadtree. It must be within the bounds of the tree.
-func (q *Quadtree[T]) Add(p T) error {
+// Insert a point to the Quadtree. It must be within the bounds of the tree.
+func (q *Quadtree[T]) Insert(p T) error {
 	point := q.pnt(p)
 
 	if !q.bound.Contains(point) {
@@ -45,7 +45,7 @@ func (q *Quadtree[T]) Add(p T) error {
 		return nil
 	}
 
-	q.add(
+	q.insert(
 		&q.root,
 		p,
 		q.pnt(p),
@@ -58,8 +58,8 @@ func (q *Quadtree[T]) Add(p T) error {
 	return nil
 }
 
-// add is the recursive search to find a place to add the point
-func (q *Quadtree[T]) add(
+// insert is the recursive search to find a place to insert the point
+func (q *Quadtree[T]) insert(
 	n *node[T],
 	p T,
 	point Point2d,
@@ -96,7 +96,7 @@ func (q *Quadtree[T]) add(
 	}
 
 	// Proceed down to the child to see if it's a leaf yet and we can add the pointer there
-	q.add(n.children[i], p, point, left, right, bottom, top)
+	q.insert(n.children[i], p, point, left, right, bottom, top)
 }
 
 // Slice is designed to be as obviously correct as possible to start

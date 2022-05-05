@@ -22,7 +22,7 @@ func TestNewQuadtree(t *testing.T) {
 	pts_set := set.NewSet(pts)
 
 	for _, p := range pts {
-		tree.Add(p)
+		tree.Insert(p)
 	}
 
 	got := set.NewSet(tree.Slice())
@@ -64,7 +64,7 @@ func FuzzAdd(f *testing.F) {
 		bbox := Bound{Point2d{-1000, -1000}, Point2d{1000, 1000}}
 		tree := NewQuadtree(bbox, identity[Point2d], Point2dDistance)
 		for _, pt := range pts {
-			tree.Add(pt)
+			tree.Insert(pt)
 		}
 
 		// Get items out of tree
