@@ -1,7 +1,6 @@
 package spatial
 
 import (
-	"math"
 	"math/rand"
 	"testing"
 
@@ -17,9 +16,8 @@ func TestNewQuadtree(t *testing.T) {
 	tree := NewQuadtree(b, identity[Point2d], Point2dDistance)
 
 	pts := []Point2d{
-		{-5, -5},
-		{0, 0},
-		{5, 5},
+		Point2d{-5, -5},
+		Point2d{5, 5},
 	}
 	pts_set := set.NewSet(pts)
 
@@ -44,39 +42,26 @@ func FuzzAdd(f *testing.F) {
 		rand.Seed(seed)
 
 		// How many points will we add?
-		var minx, maxx, miny, maxy float64
 		n_points := rand.Int31n(200)
 		pts := make([]Point2d, n_points)
+		var x, y float64
 		if n_points > 0 {
-			x := rand.Float64() * 1000
-			y := rand.Float64() * 1000
-			minx = x
-			maxx = x
-			miny = y
-			maxy = y
-			pts[0] = Point2d{x, y}
-
-			for i := 1; i < int(n_points); i++ {
+			for i := 0; i < int(n_points); i++ {
 				x = rand.Float64() * 1000
 				if rand.Float32() > 0.5 {
 					x *= -1
 				}
-				minx = math.Min(minx, x)
-				maxx = math.Max(maxx, x)
 
 				y = rand.Float64() * 1000
 				if rand.Float32() > 0.5 {
 					y *= -1
 				}
-				miny = math.Min(miny, y)
-				maxy = math.Max(maxy, y)
-
 				pts[i] = Point2d{x, y}
 			}
 		}
 
 		// Create tree and add items
-		bbox := Bound{Point2d{minx, miny}, Point2d{maxx, maxy}}
+		bbox := Bound{Point2d{-1000, -1000}, Point2d{1000, 1000}}
 		tree := NewQuadtree(bbox, identity[Point2d], Point2dDistance)
 		for _, pt := range pts {
 			tree.Add(pt)
@@ -91,7 +76,7 @@ func FuzzAdd(f *testing.F) {
 
 		// Compare
 		if !got.Equals(want) {
-			t.Errorf("got %v, want %v", got, want)
+			t.Errorf("got %v, want %v\nSymdiff = %v", got, want, got.SymmetricDifference(want))
 		}
 	})
 }

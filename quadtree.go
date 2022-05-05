@@ -4,6 +4,8 @@ type node[T any] struct {
 	// The data associated with this node
 	item T
 
+	is_initialized bool
+
 	// Pointers to each corner
 	children [4]*node[T]
 }
@@ -11,7 +13,7 @@ type node[T any] struct {
 // Quadtree is based heavily off of
 // https://github.com/paulmach/orb/blob/215f32c132d13f906979dbb36bd24c1e0511b6d2/quadtree/quadtree.go
 type Quadtree[T any] struct {
-	root  *node[T]
+	root  node[T]
 	bound Bound
 
 	// A function to get the 2D position out this node
@@ -26,7 +28,10 @@ func NewQuadtree[T any](
 	get_point func(T) Point2d,
 	calc_distance func(T, T) float64,
 ) *Quadtree[T] {
-	return &Quadtree[T]{nil, bounds, get_point, calc_distance}
+	// THE PROBLEM IS THAT THIS PRODUCES A ZERO VALUED ITEM, WHICH HAS SEMANTIC MEANING,
+	// WHEN WE DON'T WANT IT TO
+	root_node := node[T]{is_initialized: false}
+	return &Quadtree[T]{root_node, bounds, get_point, calc_distance}
 }
 
 // Add a point to the Quadtree. It must be within the bounds of the tree.
@@ -37,13 +42,13 @@ func (q *Quadtree[T]) Add(p T) error {
 		return ErrPointOutsideOfBounds
 	}
 
-	if q.root == nil { // the start of the tree
-		q.root = &node[T]{p, [4]*node[T]{nil, nil, nil, nil}}
+	if !q.root.is_initialized { // the start of the tree
+		q.root = node[T]{p, true, [4]*node[T]{nil, nil, nil, nil}}
 		return nil
 	}
 
 	q.add(
-		q.root,
+		&q.root,
 		p,
 		q.pnt(p),
 		q.bound.Left(),
@@ -84,8 +89,11 @@ func (q *Quadtree[T]) add(
 		right = child_x
 	}
 
+	// It is no longer a leaf node
+	n.is_initialized = false
+
 	if n.children[i] == nil {
-		n.children[i] = &node[T]{p, [4]*node[T]{nil, nil, nil, nil}}
+		n.children[i] = &node[T]{p, true, [4]*node[T]{nil, nil, nil, nil}}
 		return
 	}
 
@@ -98,6 +106,10 @@ func (q *Quadtree[T]) add(
 func (q *Quadtree[T]) Slice() []T {
 	// Create the slice
 	items := make([]T, 0)
+
+	if q.root.is_initialized {
+		return items
+	}
 
 	items = append(items, q.root.item)
 
