@@ -16,8 +16,8 @@ func TestNewQuadtree(t *testing.T) {
 	tree := NewQuadtree(b, identity[Point2d], Point2dDistance)
 
 	pts := []Point2d{
-		Point2d{-5, -5},
-		Point2d{5, 5},
+		{-5, -5},
+		{5, 5},
 	}
 	pts_set := set.NewSet(pts)
 
@@ -41,7 +41,7 @@ func FuzzAdd(f *testing.F) {
 		// Set the seed. Need fuzz tests to always give the same output for a given input
 		rand.Seed(seed)
 
-		// How many points will we add?
+		// Add up to 200 items to the tree
 		n_points := rand.Int31n(200)
 		pts := make([]Point2d, n_points)
 		var x, y float64

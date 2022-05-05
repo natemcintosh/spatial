@@ -28,8 +28,6 @@ func NewQuadtree[T any](
 	get_point func(T) Point2d,
 	calc_distance func(T, T) float64,
 ) *Quadtree[T] {
-	// THE PROBLEM IS THAT THIS PRODUCES A ZERO VALUED ITEM, WHICH HAS SEMANTIC MEANING,
-	// WHEN WE DON'T WANT IT TO
 	root_node := node[T]{is_initialized: false}
 	return &Quadtree[T]{root_node, bounds, get_point, calc_distance}
 }
@@ -90,7 +88,7 @@ func (q *Quadtree[T]) add(
 	}
 
 	// It is no longer a leaf node
-	n.is_initialized = false
+	n.is_initialized = true
 
 	if n.children[i] == nil {
 		n.children[i] = &node[T]{p, true, [4]*node[T]{nil, nil, nil, nil}}
@@ -107,7 +105,7 @@ func (q *Quadtree[T]) Slice() []T {
 	// Create the slice
 	items := make([]T, 0)
 
-	if q.root.is_initialized {
+	if !q.root.is_initialized {
 		return items
 	}
 
