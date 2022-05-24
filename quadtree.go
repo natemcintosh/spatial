@@ -1,5 +1,7 @@
 package spatial
 
+import "math"
+
 type node[T any] struct {
 	// The data associated with this node
 	item T
@@ -132,4 +134,39 @@ func (n *node[T]) slice() []T {
 	}
 
 	return s
+}
+
+type findVisitor[T any] struct {
+	item           T
+	closest        *node[T]
+	closestBound   *Bound
+	minDistSquared float64
+
+	// A function to get the 2D position out this node
+	pnt func(T) Point2d
+
+	// A function to get the distance between two nodes
+	dst func(T, T) float64
+}
+
+func (v *findVisitor[T]) Bound() *Bound {
+	return v.closestBound
+}
+
+func (v *findVisitor[T]) Point() Point2d {
+	return v.pnt(v.item)
+}
+
+func (v *findVisitor[T]) Visit(n *node[T]) {
+	d := v.dst(n.item, v.item)
+	if d < v.minDistSquared {
+		v.minDistSquared = d
+		v.closest = n
+
+		d = math.Sqrt(d)
+		v.closestBound.Min.X = v.Point().X - d
+		v.closestBound.Max.X = v.Point().X + d
+		v.closestBound.Min.Y = v.Point().Y - d
+		v.closestBound.Max.Y = v.Point().Y + d
+	}
 }
