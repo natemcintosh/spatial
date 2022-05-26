@@ -136,6 +136,81 @@ func (n *node[T]) slice() []T {
 	return s
 }
 
+type node_iter[T any] struct {
+	n      *node[T]
+	left   float64
+	right  float64
+	bottom float64
+	top    float64
+	b      Bound
+}
+
+func (q *Quadtree[T]) new_node_iter(b Bound) node_iter[T] {
+	return node_iter[T]{
+		&q.root,
+		q.bound.Left(),
+		q.bound.Right(),
+		q.bound.Bottom(),
+		q.bound.Top(),
+		b,
+	}
+}
+
+// next will visit all of the non-empty nodes in the tree. At each non-empty node, it
+// will return `true`, until there are no more non-empty nodes, at which point it will
+// return `false`
+// func (node_iter *node_iter[T]) Next() bool {
+// 	// Want to advance the state of the iterator to the next non-empty node, the return
+// 	// true
+
+// 	// We start at the top
+// 	if !node_iter.n.is_initialized {
+// 		return false
+// 	}
+
+// 	// Select the first node to explore
+// 	node_iter.n = node_iter.n.children[0]
+// }
+
+// func (node_iter *node_iter[T]) node() *node[T] {
+
+// }
+
+func (q *Quadtree[T]) find_visitor(item T) (closest_node *node[T], closest_bound Bound) {
+	closest_bound = q.bound
+
+	// Create a struct for iterating over the nodes
+	// node_iter := q.new_node_iter(closest_bound)
+
+	// var n *node[T]
+	// min_dist := math.MaxFloat64
+
+	// Iterate over all the non-empty nodes
+	// for node_iter.Next() {
+	// 	// Get the node
+	// 	n = node_iter.node()
+
+	// 	// Check its distance relative to current closest node
+	// 	d := q.dst(n.item, item)
+	// 	if d < min_dist {
+	// 		min_dist = d
+	// 		closest_node = n
+
+	// 		closest_bound.Min.X = q.pnt(item).X - d
+	// 		closest_bound.Max.X = q.pnt(item).X + d
+	// 		closest_bound.Min.Y = q.pnt(item).Y - d
+	// 		closest_bound.Max.Y = q.pnt(item).Y + d
+
+	// 		// Make sure the iterator know to now only look inside the new bounds
+	// 		node_iter.b = closest_bound
+	// 	}
+
+	// }
+
+	return
+
+}
+
 type findVisitor[T any] struct {
 	item           T
 	closest        *node[T]
